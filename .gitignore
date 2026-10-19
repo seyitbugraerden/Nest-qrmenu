@@ -1,0 +1,52 @@
+# Dependencies (root and apps)
+node_modules/
+
+# Build output and caches
+dist/
+build/
+.next/
+out/
+.turbo/
+.cache/
+*.tsbuildinfo
+next-env.d.ts
+
+# Test results
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Local environment files (keep examples versioned)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs and runtime files
+logs/
+*.log
+*.pid
+*.pid.lock
+
+# Deployment metadata
+.vercel/
+
+# Local uploads
+/apps/api/uploads/
+
+# OS and editor local files
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Private keys
+*.pem
+*.key
