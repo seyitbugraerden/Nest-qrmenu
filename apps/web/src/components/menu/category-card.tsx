@@ -23,7 +23,7 @@ export default function CategoryCard({
     >
       {category.categoryImage && (
         <span className="category-thumbnail">
-          <MenuImage src={category.categoryImage} alt="" />
+          <MenuImage src={category.categoryImage} alt="" variant="thumbnail" />
         </span>
       )}
       <sup>{String(index + 1).padStart(2, "0")}</sup>

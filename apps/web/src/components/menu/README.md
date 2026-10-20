@@ -24,7 +24,7 @@ Verileri beklerken boş diziler geçilebilir. Kategoriler ve ürünler ayrı yü
 
 Kategori eşleşmesi `categoryId` ile yapılır. `categoryName` ürün yanıtında zorunlu değildir; kategori listesinden bulunur. UUID'ler ekranda sıra numarası olarak kullanılmaz.
 
-`description`, `tag` ve `illustration` yalnızca opsiyonel sunum alanlarıdır. Mevcut API bunları göndermek zorunda değildir. Görsel URL'si yoksa veya yüklenemezse yer tutucu gösterilir. Çevrimiçi görseller doğrudan URL'lerinden yüklenir (`unoptimized`).
+`description`, `tag` ve `illustration` yalnızca opsiyonel sunum alanlarıdır. Mevcut API bunları göndermek zorunda değildir. Görsel URL'si yoksa veya yüklenemezse yer tutucu gösterilir. Unsplash görselleri CDN loader ile ekran genişliğine göre boyutlandırılır; kategori, kart ve detay görselleri ayrı `sizes` değerleri kullanır. Diğer kaynakları kullanmak için izin verilen host ve loader ayarları güncellenmelidir.
 
 ## Yapı
 

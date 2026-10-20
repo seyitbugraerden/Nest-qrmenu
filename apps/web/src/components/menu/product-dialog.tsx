@@ -47,6 +47,7 @@ export default function ProductDialog({
               src={product.productImage}
               alt={product.productName}
               illustration={product.illustration}
+              variant="detail"
             />
           </div>
           <div className="dialog-copy">
