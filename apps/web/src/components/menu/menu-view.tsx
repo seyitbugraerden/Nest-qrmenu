@@ -7,6 +7,7 @@ import MenuSection from "./menu-section";
 
 export default function MenuView({
   categories,
+  categorySlug = null,
   products,
   isLoading = false,
   error = null,
@@ -144,6 +145,7 @@ export default function MenuView({
 
           <MenuSection
             categories={categories}
+            categorySlug={categorySlug}
             products={products}
             isLoading={isLoading}
             error={error}
@@ -166,7 +168,7 @@ export default function MenuView({
               nest®
             </a>
             <span>COFFEE, FOOD & GOOD MOOD.</span>
-            <span>ÖRNEK MENÜ / TASARIM ÖN İZLEMESİ</span>
+            <span>COFFEE & KITCHEN / DİJİTAL MENÜ</span>
           </div>
         </footer>
       </div>

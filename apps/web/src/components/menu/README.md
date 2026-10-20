@@ -36,12 +36,15 @@ Kategori eşleşmesi `categoryId` ile yapılır. `categoryName` ürün yanıtın
 - `product-price.tsx`: fiyat ve yüzde indirim sunumu.
 - `menu-image.tsx`: görsel, illüstrasyon ve hata yer tutucusu.
 
-Kategoriler sunucu tarafında API'den, ürünler ise şimdilik `src/data/demo-menu.ts` içindeki ön izleme verilerinden gelir. Kart component'leri HTTP isteği yapmaz.
+## Sunucu tarafında veri bağlantısı
 
-## Sunucu tarafında kategori bağlantısı
+`src/app/page.tsx`, kategorileri ve ürünleri sunucuda paralel çeker. `src/lib/categories.ts` ve `src/lib/products.ts` yalnızca sunucuda çalışır (`server-only`); bütün istekler `cache: 'no-store'` kullanır. Sayfadaki `connection()` istek zamanında render edilmesini sağlar.
 
-`src/lib/categories.ts`, NestJS `GET /categories` endpoint’ini `cache: 'no-store'` ile çağırır. `server-only` sayesinde bu modül istemci component’lerine aktarılamaz. Sayfadaki `connection()` verinin build sırasında değil, gerçek istek geldiğinde çekilmesini sağlar. `Suspense`, beklerken loading ekranını gösterir.
+- `/`: backend `GET /categories` + `GET /products`.
+- `/?category=kahveler`: backend `GET /categories` + `GET /products/kahveler`.
+- Kategori seçimi URL'ye yazılır; doğrudan bağlantı, sayfa yenileme ve tarayıcı geri/ileri navigasyonu desteklenir.
+- Kategori geçişi `useTransition` ile skeleton gösterir; kaydırma konumu korunur.
+- Hata durumunda tekrar deneme butonu `router.refresh()` ile sunucu verisini yeniler.
+- Boş yanıt, veri yok durumunu gösterir. Örnek ürünler artık sayfaya dahil edilmez.
 
-Varsayılan backend adresi `http://localhost:3001`. Farklı bir adres için `apps/web/.env.local` içine `API_URL=https://backend-adresi` ekleyip Next.js’i yeniden başlatın. Bu değişken `NEXT_PUBLIC_` içermez; tarayıcıya aktarılmaz.
-
-API hatası gerçek hata ekranını, boş kategori dizisi boş menüyü gösterir. Ürünler henüz API’ye bağlı değildir; yalnızca mevcut kategori kodlarıyla eşleşen örnek ürünler gösterilir. Her yeni sayfa isteği veya yenilemede güncel kategoriler çekilir; otomatik polling yapılmaz.
+Varsayılan API adresi `http://localhost:3001`. Farklı bir backend için `apps/web/.env.local` içinde `API_URL` tanımlayıp Next.js'i yeniden başlatın. Değişken tarayıcıya aktarılmaz. Otomatik polling yapılmaz.

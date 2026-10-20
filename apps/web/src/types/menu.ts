@@ -22,6 +22,7 @@ export type MenuProduct = Product & {
 };
 
 export type MenuViewProps = {
+  categorySlug?: string | null;
   categories: Category[];
   products: MenuProduct[];
   isLoading?: boolean;

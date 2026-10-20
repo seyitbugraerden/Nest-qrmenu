@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { MenuProduct, MenuViewProps } from "@/types/menu";
 import CategoryList from "./category-list";
 import ProductList from "./product-list";
@@ -9,22 +10,32 @@ import ProductDialog from "./product-dialog";
 export default function MenuSection({
   categories,
   products,
-  isLoading = false,
+  categorySlug = null,
+  isLoading: externalLoading = false,
   error = null,
   onRetry,
 }: MenuViewProps) {
-  const [selectedCategoryId, setCategoryId] = useState<string | null>(null);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const isLoading = externalLoading || isPending;
+  const setCategoryId = (categoryId: string | null) => {
+    const category = categories.find((item) => item.categoryId === categoryId);
+    const href = category
+      ? `/?category=${encodeURIComponent(category.slug)}`
+      : "/";
+    startTransition(() => router.push(href, { scroll: false }));
+  };
+  const retry = () => {
+    if (onRetry) onRetry();
+    else startTransition(() => router.refresh());
+  };
   const [search, setSearch] = useState("");
   const [selectedProductId, setProductId] = useState<string | null>(null);
   const categoryNames = new Map(
     categories.map((item) => [item.categoryId, item.categoryName]),
   );
-  // Veriler yenilendiğinde kaldırılan kategori seçimi tüm listeye döner.
-  const activeCategoryId = categories.some(
-    (item) => item.categoryId === selectedCategoryId,
-  )
-    ? selectedCategoryId
-    : null;
+  const activeCategoryId =
+    categories.find((item) => item.slug === categorySlug)?.categoryId ?? null;
   const filtered = products.filter(
     (product) =>
       (activeCategoryId === null || product.categoryId === activeCategoryId) &&
@@ -125,11 +136,9 @@ export default function MenuSection({
         <div className="empty-state" role="alert">
           <h3>Menüye ulaşılamıyor.</h3>
           <p>{error}</p>
-          {onRetry && (
-            <button type="button" onClick={onRetry}>
-              Tekrar dene ↗
-            </button>
-          )}
+          <button type="button" onClick={retry}>
+            Tekrar dene ↗
+          </button>
         </div>
       ) : filtered.length > 0 ? (
         <ProductList
@@ -143,7 +152,9 @@ export default function MenuSection({
           <span>↗</span>
           <h3>
             {products.length === 0
-              ? "Menümüz yakında burada."
+              ? activeCategoryId
+                ? "Bu kategoride henüz ürün yok."
+                : "Menümüz yakında burada."
               : "Başka bir tat deneyelim mi?"}
           </h3>
           <p>
