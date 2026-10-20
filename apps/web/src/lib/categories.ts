@@ -1,7 +1,7 @@
 import "server-only";
 import { Category } from "../../types";
 
-function isCategory(value: unknown): value is Category {
+export function isCategory(value: unknown): value is Category {
   if (!value || typeof value !== "object") return false;
   const item = value as Record<string, unknown>;
   return (

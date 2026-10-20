@@ -7,6 +7,7 @@ import type { Category, Product } from "../../../types";
 import MenuImage from "@/components/menu/menu-image";
 import ProductPrice from "@/components/menu/product-price";
 import styles from "./admin.module.css";
+import CategoryDialog from "./category-dialog";
 
 type Props = {
   categories: Category[];
@@ -22,6 +23,11 @@ export default function AdminDashboard({
   productError,
 }: Props) {
   const router = useRouter();
+  const [categoryAction, setCategoryAction] = useState<{
+    category: Category;
+    mode: "edit" | "delete";
+  } | null>(null);
+  const [feedback, setFeedback] = useState("");
   const [tab, setTab] = useState<"products" | "categories">("products");
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -119,6 +125,11 @@ export default function AdminDashboard({
             {isPending ? "Yenileniyor…" : "Verileri yenile"}
           </button>
         </div>
+        {feedback && (
+          <p className={styles.successMessage} role="status">
+            {feedback}
+          </p>
+        )}
         <section className={styles.stats} aria-label="Menü özeti">
           <div>
             <span>TOPLAM KATEGORİ</span>
@@ -266,6 +277,7 @@ export default function AdminDashboard({
                         <th scope="col">SLUG</th>
                         <th scope="col">KATEGORİ KODU</th>
                         <th scope="col">ÜRÜN SAYISI</th>
+                        <th scope="col">İŞLEMLER</th>
                       </>
                     )}
                   </tr>
@@ -345,6 +357,35 @@ export default function AdminDashboard({
                                 : (counts.get(category.categoryId) ?? 0)}
                             </span>
                           </td>
+                          <td>
+                            <div className={styles.rowActions}>
+                              <button
+                                type="button"
+                                disabled={isPending}
+                                onClick={() => {
+                                  setFeedback("");
+                                  setCategoryAction({ category, mode: "edit" });
+                                }}
+                                aria-label={`${category.categoryName} kategorisini düzenle`}
+                              >
+                                Düzenle ↗
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isPending}
+                                onClick={() => {
+                                  setFeedback("");
+                                  setCategoryAction({
+                                    category,
+                                    mode: "delete",
+                                  });
+                                }}
+                                aria-label={`${category.categoryName} kategorisini sil`}
+                              >
+                                Sil
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                 </tbody>
@@ -363,6 +404,24 @@ export default function AdminDashboard({
           </div>
         </section>
       </main>
+      {categoryAction && (
+        <CategoryDialog
+          key={`${categoryAction.mode}:${categoryAction.category.id}`}
+          category={categoryAction.category}
+          mode={categoryAction.mode}
+          productCount={
+            productError
+              ? undefined
+              : (counts.get(categoryAction.category.categoryId) ?? 0)
+          }
+          onClose={() => setCategoryAction(null)}
+          onSaved={(message) => {
+            setCategoryAction(null);
+            setFeedback(message);
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
