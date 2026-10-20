@@ -9,6 +9,7 @@ import { DATABASE, type Database } from '../database/database.module.js';
 import { asc, eq } from 'drizzle-orm';
 import { categories } from '../database/schema.js';
 import { UpdateCategoryDto } from './dto/update-category.dto.js';
+import { CreateCategoryDto } from './dto/create-category.dto.js';
 
 @Injectable()
 export class CategoriesService {
@@ -91,5 +92,17 @@ export class CategoriesService {
     }
 
     return deletedCategory;
+  }
+  async create(body: CreateCategoryDto) {
+    const [category] = await this.database
+      .insert(categories)
+      .values({
+        categoryName: body.categoryName,
+        slug: body.slug,
+        categoryId: body.categoryId,
+        categoryImage: body.categoryImage,
+      })
+      .returning();
+    return category;
   }
 }

@@ -25,6 +25,7 @@ export default function AdminDashboard({
 }: Props) {
   const router = useRouter();
   const [creatingProduct, setCreatingProduct] = useState(false);
+  const [creatingCategory, setCreatingCategory] = useState(false);
   const [productAction, setProductAction] = useState<{
     product: Product;
     mode: "edit" | "delete";
@@ -122,6 +123,17 @@ export default function AdminDashboard({
             <p>Kategorilerini ve ürünlerini tek bir yerden incele.</p>
           </div>
           <div className={styles.headingActions}>
+            <button
+              type="button"
+              className={styles.refresh}
+              disabled={isPending}
+              onClick={() => {
+                setFeedback("");
+                setCreatingCategory(true);
+              }}
+            >
+              + Kategori ekle
+            </button>
             <button
               type="button"
               className={styles.addProduct}
@@ -450,6 +462,20 @@ export default function AdminDashboard({
           </div>
         </section>
       </main>
+      {creatingCategory && (
+        <CategoryDialog
+          mode="create"
+          onClose={() => setCreatingCategory(false)}
+          onSaved={(message) => {
+            setCreatingCategory(false);
+            setFeedback(message);
+            setTab("categories");
+            setSearch("");
+            setCategoryId("");
+            refresh();
+          }}
+        />
+      )}
       {creatingProduct && (
         <ProductEditDialog
           mode="create"

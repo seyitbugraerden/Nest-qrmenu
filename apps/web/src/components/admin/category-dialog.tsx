@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Category } from "../../../types";
 import {
+  createCategory,
   deleteCategory,
   loadCategory,
   updateCategory,
@@ -11,15 +12,23 @@ import {
 import styles from "./admin.module.css";
 
 type Props = {
-  category: Category;
-  mode: "edit" | "delete";
+  category?: Category;
+  mode: "edit" | "delete" | "create";
   productCount?: number;
   onClose: () => void;
   onSaved: (message: string) => void;
 };
 
+const emptyCategory: Category = {
+  id: "",
+  categoryId: "",
+  categoryName: "",
+  slug: "",
+  categoryImage: null,
+};
+
 export default function CategoryDialog({
-  category,
+  category = emptyCategory,
   mode,
   productCount,
   onClose,
@@ -74,6 +83,11 @@ export default function CategoryDialog({
     if (slug.trim() !== record.slug) changes.slug = slug.trim();
     if ((image.trim() || null) !== record.categoryImage)
       changes.categoryImage = image.trim() || null;
+    if (mode === "create") {
+      changes.categoryName = name.trim();
+      changes.slug = slug.trim();
+      changes.categoryImage = image.trim() || null;
+    }
     if (mode === "edit" && !Object.keys(changes).length) {
       setError("Henüz bir değişiklik yapmadın.");
       return;
@@ -83,17 +97,21 @@ export default function CategoryDialog({
     setError("");
     try {
       const result =
-        mode === "edit"
-          ? await updateCategory(record.slug, changes)
-          : await deleteCategory(category.slug);
+        mode === "create"
+          ? await createCategory(changes)
+          : mode === "edit"
+            ? await updateCategory(record.slug, changes)
+            : await deleteCategory(category.slug);
       if (!result.success) {
         setError(result.message);
         return;
       }
       onSaved(
-        mode === "edit"
-          ? `${result.category.categoryName} güncellendi.`
-          : `${result.category.categoryName} silindi.`,
+        mode === "create"
+          ? `${result.category.categoryName} eklendi.`
+          : mode === "edit"
+            ? `${result.category.categoryName} güncellendi.`
+            : `${result.category.categoryName} silindi.`,
       );
     } catch {
       setError("İşlem tamamlanamadı. Listeyi yenileyip tekrar deneyin.");
@@ -125,7 +143,11 @@ export default function CategoryDialog({
           <div>
             <p className={styles.eyebrow}>KATEGORİ İŞLEMLERİ</p>
             <h2 id="category-dialog-title">
-              {mode === "edit" ? "Kategoriyi düzenle" : "Kategoriyi sil"}
+              {mode === "create"
+                ? "Yeni kategori ekle"
+                : mode === "edit"
+                  ? "Kategoriyi düzenle"
+                  : "Kategoriyi sil"}
             </h2>
           </div>
           <button
@@ -141,15 +163,17 @@ export default function CategoryDialog({
           id="category-dialog-description"
           className={styles.dialogDescription}
         >
-          {mode === "edit"
-            ? "Kategori adı, menü bağlantısı ve görsel adresini güncelleyebilirsin."
-            : `“${category.categoryName}” kategorisini silmek istediğine emin misin? Bu işlem geri alınamaz.`}
+          {mode === "create"
+            ? "Kategori adını ve menü bağlantısında kullanılacak slug değerini gir. Kategori kodu otomatik oluşturulur."
+            : mode === "edit"
+              ? "Kategori adı, menü bağlantısı ve görsel adresini güncelleyebilirsin."
+              : `“${category.categoryName}” kategorisini silmek istediğine emin misin? Bu işlem geri alınamaz.`}
         </p>
         {loading ? (
           <p role="status" className={styles.dialogDescription}>
             Güncel kategori bilgileri alınıyor…
           </p>
-        ) : mode === "edit" && !loadFailed ? (
+        ) : mode !== "delete" && !loadFailed ? (
           <fieldset disabled={busy} className={styles.fields}>
             <label>
               Kategori adı
@@ -174,8 +198,9 @@ export default function CategoryDialog({
                 spellCheck={false}
               />
               <small>
-                Örnek: sicak-kahveler. Değiştirirsen eski kategori bağlantısı
-                geçersiz olur.
+                {mode === "create"
+                  ? "Örnek: sicak-kahveler. Küçük harf, rakam ve tire kullan."
+                  : "Örnek: sicak-kahveler. Değiştirirsen eski kategori bağlantısı geçersiz olur."}
               </small>
             </label>
             <label>
@@ -192,7 +217,13 @@ export default function CategoryDialog({
               </small>
             </label>
             <p className={styles.dialogCode}>
-              Kategori kodu: <code>{record.categoryId}</code>
+              {mode === "create" ? (
+                "Kategori kodu otomatik oluşturulacak."
+              ) : (
+                <>
+                  Kategori kodu: <code>{record.categoryId}</code>
+                </>
+              )}
             </p>
           </fieldset>
         ) : null}
@@ -236,9 +267,11 @@ export default function CategoryDialog({
             >
               {busy
                 ? "İşleniyor…"
-                : mode === "edit"
-                  ? "Değişiklikleri kaydet"
-                  : "Kategoriyi sil"}
+                : mode === "create"
+                  ? "Kategoriyi ekle"
+                  : mode === "edit"
+                    ? "Değişiklikleri kaydet"
+                    : "Kategoriyi sil"}
             </button>
           )}
         </div>

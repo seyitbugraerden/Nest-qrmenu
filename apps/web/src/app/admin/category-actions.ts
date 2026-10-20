@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { randomUUID } from "node:crypto";
 import type { Category } from "../../../types";
 import { isCategory } from "@/lib/categories";
 
@@ -14,15 +15,18 @@ export type CategoryChanges = {
 
 async function requestCategory(
   slug: string,
-  method: "GET" | "PATCH" | "DELETE",
-  changes?: CategoryChanges,
+  method: "GET" | "PATCH" | "DELETE" | "POST",
+  changes?: CategoryChanges & { categoryId?: string },
 ): Promise<CategoryActionResult> {
-  if (typeof slug !== "string" || !slug.trim() || slug.length > 250)
+  if (
+    method !== "POST" &&
+    (typeof slug !== "string" || !slug.trim() || slug.length > 250)
+  )
     return { success: false, message: "Geçerli bir kategori seçin." };
   try {
     const apiUrl = process.env.API_URL ?? "http://localhost:3001";
     const response = await fetch(
-      `${apiUrl.replace(/\/$/, "")}/categories/${encodeURIComponent(slug)}`,
+      `${apiUrl.replace(/\/$/, "")}${method === "POST" ? "/categories" : `/categories/${encodeURIComponent(slug)}`}`,
       {
         method,
         cache: "no-store",
@@ -75,10 +79,11 @@ export async function loadCategory(
   return requestCategory(slug, "GET");
 }
 
-export async function updateCategory(
-  slug: string,
+function validateCategoryInput(
   input: CategoryChanges,
-): Promise<CategoryActionResult> {
+):
+  | { success: true; changes: CategoryChanges }
+  | { success: false; message: string } {
   if (!input || typeof input !== "object")
     return { success: false, message: "Kategori bilgileri geçerli değil." };
   const changes: CategoryChanges = {};
@@ -132,7 +137,34 @@ export async function updateCategory(
   }
   if (!Object.keys(changes).length)
     return { success: false, message: "Güncellenecek alan gönderilmedi." };
-  return requestCategory(slug, "PATCH", changes);
+  return { success: true, changes };
+}
+
+export async function updateCategory(
+  slug: string,
+  input: CategoryChanges,
+): Promise<CategoryActionResult> {
+  const validated = validateCategoryInput(input);
+  if (!validated.success) return validated;
+  return requestCategory(slug, "PATCH", validated.changes);
+}
+
+export async function createCategory(
+  input: CategoryChanges,
+): Promise<CategoryActionResult> {
+  if (
+    !input ||
+    typeof input.categoryName !== "string" ||
+    typeof input.slug !== "string"
+  )
+    return { success: false, message: "Kategori adı ve slug zorunludur." };
+  const validated = validateCategoryInput(input);
+  if (!validated.success) return validated;
+  return requestCategory("", "POST", {
+    ...validated.changes,
+    categoryId: randomUUID(),
+    categoryImage: validated.changes.categoryImage ?? null,
+  });
 }
 
 export async function deleteCategory(

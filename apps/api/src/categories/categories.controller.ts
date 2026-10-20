@@ -6,9 +6,11 @@ import {
   Inject,
   Param,
   Patch,
+  Post,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service.js';
 import { UpdateCategoryDto } from './dto/update-category.dto.js';
+import { CreateCategoryDto } from './dto/create-category.dto.js';
 
 @Controller('categories')
 export class CategoriesController {
@@ -32,5 +34,9 @@ export class CategoriesController {
   @Delete(':slug')
   remove(@Param('slug') slug: string) {
     return this.categoriesService.remove(slug);
+  }
+  @Post()
+  create(@Body() body: CreateCategoryDto) {
+    return this.categoriesService.create(body);
   }
 }
