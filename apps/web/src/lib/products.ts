@@ -9,7 +9,7 @@ function isNumeric(value: unknown): value is string | number {
   );
 }
 
-function isProduct(value: unknown): value is Product {
+export function isProduct(value: unknown): value is Product {
   if (!value || typeof value !== "object") return false;
   const item = value as Record<string, unknown>;
   return (

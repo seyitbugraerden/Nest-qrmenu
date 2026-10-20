@@ -8,6 +8,7 @@ import MenuImage from "@/components/menu/menu-image";
 import ProductPrice from "@/components/menu/product-price";
 import styles from "./admin.module.css";
 import CategoryDialog from "./category-dialog";
+import ProductEditDialog from "./product-edit-dialog";
 
 type Props = {
   categories: Category[];
@@ -23,6 +24,10 @@ export default function AdminDashboard({
   productError,
 }: Props) {
   const router = useRouter();
+  const [productAction, setProductAction] = useState<{
+    product: Product;
+    mode: "edit" | "delete";
+  } | null>(null);
   const [categoryAction, setCategoryAction] = useState<{
     category: Category;
     mode: "edit" | "delete";
@@ -270,6 +275,7 @@ export default function AdminDashboard({
                         <th scope="col">ÜRÜN KODU</th>
                         <th scope="col">FİYAT</th>
                         <th scope="col">İNDİRİM</th>
+                        <th scope="col">İŞLEMLER</th>
                       </>
                     ) : (
                       <>
@@ -324,6 +330,32 @@ export default function AdminDashboard({
                             ) : (
                               <span className={styles.muted}>—</span>
                             )}
+                          </td>
+                          <td>
+                            <div className={styles.rowActions}>
+                              <button
+                                type="button"
+                                disabled={isPending}
+                                onClick={() => {
+                                  setFeedback("");
+                                  setProductAction({ product, mode: "edit" });
+                                }}
+                                aria-label={`${product.productName} ürününü düzenle`}
+                              >
+                                Düzenle ↗
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isPending}
+                                onClick={() => {
+                                  setFeedback("");
+                                  setProductAction({ product, mode: "delete" });
+                                }}
+                                aria-label={`${product.productName} ürününü sil`}
+                              >
+                                Sil
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -404,6 +436,21 @@ export default function AdminDashboard({
           </div>
         </section>
       </main>
+      {productAction && (
+        <ProductEditDialog
+          key={`${productAction.mode}:${productAction.product.id}`}
+          product={productAction.product}
+          mode={productAction.mode}
+          categories={categories}
+          categoryError={categoryError}
+          onClose={() => setProductAction(null)}
+          onSaved={(message) => {
+            setProductAction(null);
+            setFeedback(message);
+            refresh();
+          }}
+        />
+      )}
       {categoryAction && (
         <CategoryDialog
           key={`${categoryAction.mode}:${categoryAction.category.id}`}

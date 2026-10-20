@@ -908,3 +908,28 @@
     font-size: 23px;
   }
 }
+
+.fields select {
+  font: inherit;
+  font-size: 13px;
+  padding: 12px;
+  border: 1px solid #d7dfcb;
+  background: #fff;
+  border-radius: 5px;
+  width: 100%;
+  min-width: 0;
+  color: #273328;
+}
+.formColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.formColumns > label {
+  min-width: 0;
+}
+@media (max-width: 400px) {
+  .formColumns {
+    grid-template-columns: 1fr;
+  }
+}
