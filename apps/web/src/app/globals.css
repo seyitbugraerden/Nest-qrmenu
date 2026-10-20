@@ -1525,3 +1525,98 @@ footer {
     transform: translateY(-24px);
   }
 }
+
+/* Props ile beslenen menü component'leri */
+.category-thumbnail {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.menu-photo {
+  object-fit: cover;
+  transition: transform 0.6s;
+}
+.product-card:hover .menu-photo {
+  transform: scale(1.07);
+}
+.image-placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  width: 100%;
+  background: #d7ddc7;
+  color: #697a49;
+  font:
+    italic 42px Georgia,
+    serif;
+  letter-spacing: -3px;
+}
+.category-thumbnail .image-placeholder {
+  font-size: 14px;
+  letter-spacing: -1px;
+}
+.dialog-art {
+  position: relative;
+}
+.price {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.price del {
+  font-size: 10px;
+  font-weight: normal;
+  opacity: 0.55;
+}
+.discount-label {
+  color: #5d752b;
+  font-size: 9px;
+}
+.menu-skeleton > div {
+  height: 245px;
+  border-radius: 5px;
+  background: #e0e3d6;
+}
+.menu-skeleton > span {
+  display: block;
+  height: 15px;
+  width: 75%;
+  border-radius: 3px;
+  background: #e0e3d6;
+  margin-top: 18px;
+}
+.menu-skeleton > span:last-child {
+  width: 45%;
+  margin-top: 10px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .menu-skeleton {
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+  }
+}
+@keyframes skeleton-pulse {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 760px) {
+  .menu-skeleton > div {
+    height: 205px;
+  }
+  .product-title .price {
+    align-items: flex-start;
+  }
+}
+@media (max-width: 420px) {
+  .menu-skeleton > div {
+    height: 170px;
+  }
+}

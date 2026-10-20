@@ -1,0 +1,107 @@
+{
+  "categories": [
+    {
+      "id": "DEMO-CAT-001",
+      "photo": "1517640033243-dc06bb716df5",
+      "source": "https://vocal.media/feast/ten-different-types-of-coffee-drinks-explained"
+    },
+    {
+      "id": "DEMO-CAT-002",
+      "photo": "1523677011781-c91d1bbe2f9e",
+      "source": "https://unsplash.com/s/photos/lemonade-stand"
+    },
+    {
+      "id": "DEMO-CAT-003",
+      "photo": "1670404161019-2c06269de22e",
+      "source": "https://unsplash.com/photos/a-couple-of-plates-with-food-on-them-5mIva6R0YMM"
+    },
+    {
+      "id": "DEMO-CAT-004",
+      "photo": "1551963831-b3b1ca40c98e",
+      "source": "https://unsplash.com/photos/ceramic-white-mug-hXULVp16O1o"
+    }
+  ],
+  "products": [
+    {
+      "id": "DEMO-PRD-001",
+      "photo": "1579992357036-b19b591b7519",
+      "source": "https://unsplash.com/photos/white-ceramic-mug-with-brown-liquid-1Mjr2ontCEM"
+    },
+    {
+      "id": "DEMO-PRD-002",
+      "photo": "1693481876633-20ee74518d9f",
+      "source": "https://unsplash.com/photos/a-cup-of-coffee-on-a-saucer-on-a-table-iqT0R-iLVEQ"
+    },
+    {
+      "id": "DEMO-PRD-003",
+      "photo": "1531705829171-5c50027ccb82",
+      "source": "https://unsplash.com/photos/shallow-focus-photo-coffee-decanter-Ko7PFAommGE"
+    },
+    {
+      "id": "DEMO-PRD-004",
+      "photo": "1461023058943-07fcbe16d735",
+      "source": "https://unsplash.com/photos/glass-cup-filled-with-ice-latte-on-tabletop-L-sm1B4L1Ns"
+    },
+    {
+      "id": "DEMO-PRD-005",
+      "photo": "1671713682259-d36d07e10d80",
+      "source": "https://unsplash.com/photos/a-glass-of-lemonade-sitting-on-top-of-a-marble-table-rutW37tKooQ"
+    },
+    {
+      "id": "DEMO-PRD-006",
+      "photo": "1581996323441-538096e854b9",
+      "source": "https://unsplash.com/photos/clear-drinking-glass-with-brown-liquid-vP9TjdIm9fE"
+    },
+    {
+      "id": "DEMO-PRD-007",
+      "photo": "1759303380841-55c09244fd2b",
+      "source": "https://unsplash.com/es/fotos/rebanada-de-tarta-de-queso-vasco-quemada-en-bandeja-de-madera-KoYk0JGAk3E"
+    },
+    {
+      "id": "DEMO-PRD-008",
+      "photo": "1777647362214-ae62d7d4a707",
+      "source": "https://unsplash.com/photos/close-up-of-a-freshly-baked-chocolate-brownie-fxLLu1IpDjU"
+    },
+    {
+      "id": "DEMO-PRD-009",
+      "photo": "1754594117772-872283ac2e85",
+      "source": "https://unsplash.com/photos/a-slice-of-carrot-cake-on-a-black-plate-J3bRphHIeNA"
+    },
+    {
+      "id": "DEMO-PRD-010",
+      "photo": "1657114774407-165a24536290",
+      "source": "https://unsplash.com/photos/a-couple-of-sandwiches-Uq-tdJ9r1LE",
+      "note": "Temsili peynirli sandviç görseli; gerçek ürün fotoğrafı değildir."
+    },
+    {
+      "id": "DEMO-PRD-011",
+      "photo": "1568471382005-99e347e2aef0",
+      "source": "https://unsplash.com/photos/baked-croissants-12c8IxvlsOU"
+    },
+    {
+      "id": "DEMO-PRD-012",
+      "photo": "1603046891743-0f28d1192132",
+      "source": "https://unsplash.com/photos/sliced-bread-with-green-vegetable-and-sliced-lemon-on-white-ceramic-plate-T72IMiUvP4w"
+    },
+    {
+      "id": "DEMO-PRD-013",
+      "photo": "1693645761262-e183e1c6c069",
+      "source": "https://unsplash.com/photos/a-cappuccino-on-a-saucer-on-a-wooden-table-ZipA5UCv9as"
+    },
+    {
+      "id": "DEMO-PRD-014",
+      "photo": "1517959105821-eaf2591984ca",
+      "source": "https://unsplash.com/s/photos/iced-americano"
+    },
+    {
+      "id": "DEMO-PRD-015",
+      "photo": "1605621234603-421e591840cd",
+      "source": "https://unsplash.com/photos/sliced-chocolate-cake-on-white-ceramic-plate-xPBUzVMKKTw"
+    },
+    {
+      "id": "DEMO-PRD-016",
+      "photo": "1496113269490-84ffe1a410cb",
+      "source": "https://unsplash.com/pt-br/fotografias/sanduiche-assado-VYfc_iLqe7U"
+    }
+  ]
+}
