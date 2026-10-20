@@ -26,3 +26,5 @@ export const products = pgTable(
   },
   (table) => [index('products_category_id_idx').on(table.categoryId)],
 );
+
+export * from '../auth/auth.schema.js';

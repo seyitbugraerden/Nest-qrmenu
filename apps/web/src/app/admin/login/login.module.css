@@ -1,0 +1,161 @@
+.page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f3f4ec;
+  color: #28392a;
+}
+.card {
+  width: min(460px, 100%);
+  padding: 55px 45px;
+  margin: auto;
+}
+.brand {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -6px;
+  line-height: 1;
+}
+.brand > span {
+  font-size: 15px;
+  vertical-align: top;
+  display: inline-block;
+  margin: 10px 0 0 7px;
+  letter-spacing: 0;
+}
+.eyebrow {
+  font-size: 8px;
+  letter-spacing: 2px;
+  margin: 32px 0 16px;
+  color: #889176;
+}
+.card h1 {
+  font-size: 51px;
+  font-weight: 500;
+  letter-spacing: -2px;
+  line-height: 1.02;
+  margin: 0;
+}
+.card h1 i {
+  font-family: Georgia, serif;
+  font-weight: normal;
+  color: #6e8352;
+}
+.description {
+  font-size: 12px;
+  color: #879077;
+  line-height: 1.8;
+  margin: 20px 0 28px;
+}
+.card fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+}
+.card label {
+  display: grid;
+  gap: 8px;
+  font-size: 11px;
+  color: #627353;
+}
+.card input {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 12px;
+  background: #fff;
+  border: 1px solid #d6dfca;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #28392a;
+}
+.card small {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #8b957d;
+}
+.card button {
+  background: #293c2c;
+  color: #d7f473;
+  border: 0;
+  border-radius: 5px;
+  padding: 15px 20px;
+  width: 100%;
+  margin-top: 24px;
+  font-size: 12px;
+}
+.card button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.back {
+  display: inline-block;
+  font-size: 11px;
+  color: #71865a;
+  margin-top: 24px;
+}
+.footnote {
+  border-top: 1px solid #dce3d3;
+  padding-top: 20px;
+  margin-top: 28px;
+  color: #929c84;
+  font-size: 9px;
+}
+.error {
+  background: #f9e9e3;
+  border: 1px solid #e9c8bc;
+  border-radius: 5px;
+  padding: 12px;
+  color: #9c5140;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.art {
+  background: #293c2c;
+  color: #d7f473;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  padding: 60px 12%;
+  overflow: hidden;
+}
+.art > span {
+  font-size: clamp(38px, 4.7vw, 75px);
+  line-height: 1.05;
+  letter-spacing: -3px;
+  z-index: 1;
+}
+.art i {
+  font-family: Georgia, serif;
+}
+.art > b {
+  font-size: 220px;
+  font-weight: normal;
+  line-height: 1;
+  color: #65834a;
+  align-self: flex-end;
+  transform: rotate(15deg);
+}
+.art > small {
+  position: absolute;
+  bottom: 35px;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #95aa80;
+}
+@media (max-width: 760px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+  .art {
+    display: none;
+  }
+  .card {
+    padding: 35px 28px;
+  }
+  .card h1 {
+    font-size: 45px;
+  }
+}

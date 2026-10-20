@@ -13,13 +13,19 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/main.js",
     "lint": "oxlint --type-aware src/ test/",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
-    "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
+    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+    "auth:prepare": "node scripts/auth-prepare.mjs",
+    "admin:create": "npm run build && node scripts/admin-account.mjs create",
+    "admin:reset": "npm run build && node scripts/admin-account.mjs reset",
+    "admin:revoke": "npm run build && node scripts/admin-account.mjs revoke",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
@@ -27,8 +33,11 @@
     "@nestjs/core": "^12.0.1",
     "@nestjs/observe": "^0.3.0",
     "@nestjs/platform-express": "^12.0.1",
+    "argon2": "^0.45.1",
     "dotenv": "^18.0.8",
     "drizzle-orm": "^0.45.4",
+    "otpauth": "^9.5.2",
+    "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

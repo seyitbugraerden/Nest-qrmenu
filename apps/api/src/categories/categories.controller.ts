@@ -1,3 +1,4 @@
+import { Public } from '../auth/public.decorator.js';
 import {
   Body,
   Controller,
@@ -19,10 +20,12 @@ export class CategoriesController {
     private readonly categoriesService: CategoriesService,
   ) {}
 
+  @Public()
   @Get()
   findAll() {
     return this.categoriesService.findAll();
   }
+  @Public()
   @Get(':slug')
   findBySlug(@Param('slug') slug: string) {
     return this.categoriesService.findBySlug(slug);

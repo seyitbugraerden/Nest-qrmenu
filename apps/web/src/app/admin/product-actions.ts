@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { adminActionAuthorization } from "@/lib/admin-auth";
 import { randomUUID } from "node:crypto";
 import type { Product } from "../../../types";
 import { isProduct } from "@/lib/products";
@@ -29,17 +30,19 @@ async function requestProduct(
       ))
   )
     return { success: false, message: "Geçerli bir ürün seçin." };
+  const authorization = await adminActionAuthorization();
   try {
     const base = process.env.API_URL ?? "http://localhost:3001";
     const response = await fetch(
       `${base.replace(/\/$/, "")}${method === "POST" ? "/products" : `/products/detail/${encodeURIComponent(id)}`}`,
       {
         method,
+        headers: authorization,
         cache: "no-store",
         signal: AbortSignal.timeout(10_000),
         ...(changes
           ? {
-              headers: { "Content-Type": "application/json" },
+              headers: { ...authorization, "Content-Type": "application/json" },
               body: JSON.stringify(changes),
             }
           : {}),
@@ -84,9 +87,11 @@ async function requestProduct(
 }
 
 export async function loadProduct(id: string): Promise<ProductActionResult> {
+  await adminActionAuthorization();
   return requestProduct(id, "GET");
 }
 export async function deleteProduct(id: string): Promise<ProductActionResult> {
+  await adminActionAuthorization();
   return requestProduct(id, "DELETE");
 }
 
@@ -179,6 +184,7 @@ export async function updateProduct(
   id: string,
   input: ProductChanges,
 ): Promise<ProductActionResult> {
+  await adminActionAuthorization();
   const validated = await validateProductInput(input);
   if (!validated.success) return validated;
   return requestProduct(id, "PATCH", validated.changes);
@@ -187,6 +193,7 @@ export async function updateProduct(
 export async function createProduct(
   input: ProductChanges,
 ): Promise<ProductActionResult> {
+  await adminActionAuthorization();
   if (
     !input ||
     typeof input.productName !== "string" ||

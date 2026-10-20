@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { logoutAction } from "@/app/admin/login/actions";
 import type { Category, Product } from "../../../types";
 import MenuImage from "@/components/menu/menu-image";
 import ProductPrice from "@/components/menu/product-price";
@@ -11,6 +12,8 @@ import CategoryDialog from "./category-dialog";
 import ProductEditDialog from "./product-edit-dialog";
 
 type Props = {
+  adminEmail: string;
+  logoutError?: boolean;
   categories: Category[];
   products: Product[];
   categoryError: string | null;
@@ -18,6 +21,8 @@ type Props = {
 };
 
 export default function AdminDashboard({
+  adminEmail,
+  logoutError = false,
   categories,
   products,
   categoryError,
@@ -101,6 +106,18 @@ export default function AdminDashboard({
         </nav>
         <div className={styles.sidebarBottom}>
           <p>Her şey, iyi bir menüyle başlar.</p>
+          <small className={styles.adminEmail}>{adminEmail}</small>
+          <form action={logoutAction}>
+            <button className={styles.logoutButton} type="submit">
+              Çıkış yap ↗
+            </button>
+          </form>
+          <form action={logoutAction}>
+            <input type="hidden" name="all" value="true" />
+            <button className={styles.logoutAll} type="submit">
+              Tüm cihazlardan çıkış
+            </button>
+          </form>
           <Link href="/">
             Menüyü görüntüle <span>↗</span>
           </Link>
@@ -111,7 +128,11 @@ export default function AdminDashboard({
           <span>
             WORKSPACE <span>/</span> NEST COFFEE & KITCHEN
           </span>
-          <span className={styles.mode}>Menü görünümü</span>
+          <form action={logoutAction}>
+            <button type="submit" className={styles.refresh}>
+              Çıkış yap ↗
+            </button>
+          </form>
         </header>
         <div className={styles.heading}>
           <div>
@@ -156,6 +177,12 @@ export default function AdminDashboard({
             </button>
           </div>
         </div>
+        {logoutError && (
+          <p className={styles.dialogError} role="alert">
+            Çıkış API tarafından doğrulanamadı. Bağlantıyı kontrol edip tekrar
+            deneyin; oturumunuz henüz kapatılmadı.
+          </p>
+        )}
         {feedback && (
           <p className={styles.successMessage} role="status">
             {feedback}

@@ -1,3 +1,4 @@
+import { Public } from '../auth/public.decorator.js';
 import {
   Body,
   Controller,
@@ -20,14 +21,17 @@ export class ProductsController {
     private readonly productsService: ProductsService,
   ) {}
 
+  @Public()
   @Get()
   findAll() {
     return this.productsService.findAll();
   }
+  @Public()
   @Get(':slug')
   findByCategorySlug(@Param('slug') slug: string) {
     return this.productsService.findByCategorySlug(slug);
   }
+  @Public()
   @Get('detail/:id')
   findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.productsService.findOne(id);

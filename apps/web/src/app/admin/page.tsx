@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { connection } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
 import AdminDashboard from "@/components/admin/admin-dashboard";
 import { getCategories } from "@/lib/categories";
 import { getProducts } from "@/lib/products";
@@ -11,14 +12,22 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-async function AdminData() {
+async function AdminData({
+  searchParams,
+}: {
+  searchParams: Promise<{ authError?: string }>;
+}) {
   await connection();
+  const session = await requireAdmin();
+  const { authError } = await searchParams;
   const [categories, products] = await Promise.allSettled([
     getCategories(),
     getProducts(),
   ]);
   return (
     <AdminDashboard
+      adminEmail={session.admin.email}
+      logoutError={authError === "logout"}
       categories={categories.status === "fulfilled" ? categories.value : []}
       products={products.status === "fulfilled" ? products.value : []}
       categoryError={
@@ -35,7 +44,11 @@ async function AdminData() {
   );
 }
 
-export default function AdminPage() {
+export default function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ authError?: string }>;
+}) {
   return (
     <Suspense
       fallback={
@@ -46,7 +59,7 @@ export default function AdminPage() {
         </div>
       }
     >
-      <AdminData />
+      <AdminData searchParams={searchParams} />
     </Suspense>
   );
 }

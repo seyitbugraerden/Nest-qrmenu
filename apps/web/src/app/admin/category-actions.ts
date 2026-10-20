@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { adminActionAuthorization } from "@/lib/admin-auth";
 import { randomUUID } from "node:crypto";
 import type { Category } from "../../../types";
 import { isCategory } from "@/lib/categories";
@@ -23,17 +24,19 @@ async function requestCategory(
     (typeof slug !== "string" || !slug.trim() || slug.length > 250)
   )
     return { success: false, message: "Geçerli bir kategori seçin." };
+  const authorization = await adminActionAuthorization();
   try {
     const apiUrl = process.env.API_URL ?? "http://localhost:3001";
     const response = await fetch(
       `${apiUrl.replace(/\/$/, "")}${method === "POST" ? "/categories" : `/categories/${encodeURIComponent(slug)}`}`,
       {
         method,
+        headers: authorization,
         cache: "no-store",
         signal: AbortSignal.timeout(10_000),
         ...(changes
           ? {
-              headers: { "Content-Type": "application/json" },
+              headers: { ...authorization, "Content-Type": "application/json" },
               body: JSON.stringify(changes),
             }
           : {}),
@@ -76,6 +79,7 @@ async function requestCategory(
 export async function loadCategory(
   slug: string,
 ): Promise<CategoryActionResult> {
+  await adminActionAuthorization();
   return requestCategory(slug, "GET");
 }
 
@@ -144,6 +148,7 @@ export async function updateCategory(
   slug: string,
   input: CategoryChanges,
 ): Promise<CategoryActionResult> {
+  await adminActionAuthorization();
   const validated = validateCategoryInput(input);
   if (!validated.success) return validated;
   return requestCategory(slug, "PATCH", validated.changes);
@@ -152,6 +157,7 @@ export async function updateCategory(
 export async function createCategory(
   input: CategoryChanges,
 ): Promise<CategoryActionResult> {
+  await adminActionAuthorization();
   if (
     !input ||
     typeof input.categoryName !== "string" ||
@@ -170,5 +176,6 @@ export async function createCategory(
 export async function deleteCategory(
   slug: string,
 ): Promise<CategoryActionResult> {
+  await adminActionAuthorization();
   return requestCategory(slug, "DELETE");
 }
