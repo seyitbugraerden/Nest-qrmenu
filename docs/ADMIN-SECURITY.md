@@ -4,7 +4,7 @@ Müşteri menüsünün GET endpoint'leri açıktır. Diğer NestJS endpoint'leri
 
 ## İlk kurulum
 
-Bu çalışma sırasında güvenlik tabloları Neon'a eklendi ve yerel `apps/api/.env` dosyasına rastgele MFA şifreleme anahtarı yazıldı. Ürün ve kategoriler değiştirilmedi. Henüz yönetici hesabı oluşturulmadı.
+Yeni ortamda `apps/api/.env.example` dosyasını `.env` olarak kopyalayın ve `DATABASE_URL` değerini doldurun. Ardından `npm run auth:prepare` ile MFA şifreleme anahtarını üretin, `npm run db:migrate` ile tabloları oluşturun. Mevcut bir ortamda bu adımları tamamladıysanız ilk yönetici hesabını oluşturabilirsiniz.
 
 İlk hesabı **kendi etkileşimli terminalinizde**, `apps/api` klasöründe oluşturun:
 

@@ -5,6 +5,7 @@
 ```tsx
 <MenuView
   categories={categories}
+  categorySlug={categorySlug}
   products={products}
   isLoading={isLoading}
   error={error}
@@ -12,7 +13,7 @@
 />
 ```
 
-- `categories`: `types.db.ts` içindeki `Category[]`. Backend'in kategori alan adlarıyla aynıdır.
+- `categories`: `types.d.ts` içindeki `Category[]`. Backend'in kategori alan adlarıyla aynıdır.
 - `products`: `src/types/menu.ts` içindeki `MenuProduct[]`. Temel alanlar ürün şemasıyla aynıdır.
 - `isLoading`: ürün kartlarının yerinde animasyonlu skeleton gösterir.
 - `error`: hata metni; varsa liste yerine hata ekranı gösterir.

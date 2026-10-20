@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nest QR Menu Web
 
-## Getting Started
+Next.js App Router ve React ile hazırlanmış müşteri menüsü ve admin CMS. Menü verileri NestJS API'den sunucuda `cache: "no-store"` ile alınır. Kategori ve ürün düzenlemeleri oturum kontrolü yapan Server Actions üzerinden yürütülür.
 
-First, run the development server:
+[Proje ana sayfası](../../README.md) · [Backend API](../api/README.md) · [Menü bileşenleri](src/components/menu/README.md)
+
+![Masaüstü müşteri menüsü](../../docs/images/menu-desktop.png)
+
+## Kurulum
+
+Önce [backend'i](../api/README.md) başlatın. Bu dizinde:
 
 ```bash
+npm ci
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Değişken | Yerel değer | Kullanım |
+| --- | --- | --- |
+| `API_URL` | `http://localhost:3001` | Next.js sunucusunun backend adresi |
+| `APP_ORIGIN` | `http://localhost:3000` | Admin işlemlerinde beklenen tarayıcı origin'i |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Bu değerler sunucu tarafındadır; `NEXT_PUBLIC_` öneki eklemeyin. Ortam değişikliği sonrası geliştirme sunucusunu yeniden başlatın.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Sayfalar ve davranışlar
 
-## Learn More
+| Yol | İçerik |
+| --- | --- |
+| `/` | Kategoriler, ürünler, arama ve ürün detay penceresi |
+| `/?category=kahveler` | Slug'a göre filtrelenmiş menü |
+| `/admin/login` | E-posta, şifre ve TOTP/kurtarma koduyla giriş |
+| `/admin` | Oturum gerektiren kategori ve ürün yönetimi |
 
-To learn more about Next.js, take a look at the following resources:
+Kategori seçimi URL'ye yansır; yenileme ve geri/ileri navigasyonu desteklenir. Arama, yüklenen ürünler içinde çalışır. Geçişlerde skeleton, API hatasında tekrar deneme, veri yoksa boş durum gösterilir. Menü açılış ve kaydırma animasyonları içerir; azaltılmış hareket tercihi açılışta dikkate alınır.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Admin panelinde kategori ve ürün ekleme, düzenleme, silme ve ürünün kategorisini seçme alanları bulunur. Oturum token'ı HttpOnly cookie içinde tutulur ve API'ye yalnızca sunucudan gönderilir. [Admin kurulumu ve kurtarma](../../docs/ADMIN-SECURITY.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<img src="../../docs/images/admin-login.png" alt="Yönetici giriş ekranı" width="900">
 
-## Deploy on Vercel
+## Bileşen yapısı
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `src/app/page.tsx`: sunucuda menü verilerini alır.
+- `src/components/menu/`: kategori, ürün, fiyat, görsel ve detay bileşenleri.
+- `src/lib/categories.ts`, `src/lib/products.ts`: yalnızca sunucuda çalışan API istemcileri.
+- `src/app/admin/`: yönetim sayfaları, giriş ve CRUD Server Actions.
+- `src/lib/admin-auth.ts`: oturum, cookie ve Origin kontrolleri.
+- `types.d.ts`: API verileri ve sunum tipleri.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Görseller URL üzerinden yüklenir; dosya yükleme servisi yoktur. Unsplash görselleri kart, kategori ve detay boyutlarına göre optimize edilir. Yeni görsel kaynağı eklerken izin verilen host ve loader ayarlarını kontrol edin. Ayrıntılar: [menü bileşenleri](src/components/menu/README.md).
+
+## Kontroller ve üretim
+
+```bash
+npm run test:security
+npm run lint
+npm run build
+npm start
+```
+
+`npm start` öncesinde build gerekir. Üretimde `API_URL` backend'in erişilebilir adresi, `APP_ORIGIN` gerçek HTTPS origin olmalıdır. Üretim cookie'si `Secure` olduğu için HTTPS gerekir.
+
+Girişte “servise ulaşılamıyor” mesajı alırsanız backend'in çalıştığını ve `API_URL` değerini kontrol edin. “Giriş bilgileri veya doğrulama kodu geçersiz” mesajında hesap bilgilerini ve doğrulama uygulamasındaki güncel kodu kontrol edin; aynı kod tekrar kullanılamaz.
