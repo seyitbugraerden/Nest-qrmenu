@@ -24,6 +24,7 @@ export default function AdminDashboard({
   productError,
 }: Props) {
   const router = useRouter();
+  const [creatingProduct, setCreatingProduct] = useState(false);
   const [productAction, setProductAction] = useState<{
     product: Product;
     mode: "edit" | "delete";
@@ -120,15 +121,28 @@ export default function AdminDashboard({
             </h1>
             <p>Kategorilerini ve ürünlerini tek bir yerden incele.</p>
           </div>
-          <button
-            type="button"
-            className={styles.refresh}
-            disabled={isPending}
-            onClick={refresh}
-          >
-            <span className={isPending ? styles.spinning : ""}>↻</span>
-            {isPending ? "Yenileniyor…" : "Verileri yenile"}
-          </button>
+          <div className={styles.headingActions}>
+            <button
+              type="button"
+              className={styles.addProduct}
+              disabled={isPending}
+              onClick={() => {
+                setFeedback("");
+                setCreatingProduct(true);
+              }}
+            >
+              + Ürün ekle
+            </button>
+            <button
+              type="button"
+              className={styles.refresh}
+              disabled={isPending}
+              onClick={refresh}
+            >
+              <span className={isPending ? styles.spinning : ""}>↻</span>
+              {isPending ? "Yenileniyor…" : "Verileri yenile"}
+            </button>
+          </div>
         </div>
         {feedback && (
           <p className={styles.successMessage} role="status">
@@ -436,6 +450,22 @@ export default function AdminDashboard({
           </div>
         </section>
       </main>
+      {creatingProduct && (
+        <ProductEditDialog
+          mode="create"
+          categories={categories}
+          categoryError={categoryError}
+          onClose={() => setCreatingProduct(false)}
+          onSaved={(message) => {
+            setCreatingProduct(false);
+            setFeedback(message);
+            setTab("products");
+            setSearch("");
+            setCategoryId("");
+            refresh();
+          }}
+        />
+      )}
       {productAction && (
         <ProductEditDialog
           key={`${productAction.mode}:${productAction.product.id}`}

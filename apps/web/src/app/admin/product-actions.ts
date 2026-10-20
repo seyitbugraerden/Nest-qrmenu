@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { randomUUID } from "node:crypto";
 import type { Product } from "../../../types";
 import { isProduct } from "@/lib/products";
 import { getCategories } from "@/lib/categories";
@@ -17,18 +18,21 @@ export type ProductActionResult =
 
 async function requestProduct(
   id: string,
-  method: "GET" | "PATCH" | "DELETE",
-  changes?: ProductChanges,
+  method: "GET" | "PATCH" | "DELETE" | "POST",
+  changes?: ProductChanges & { productId?: string },
 ): Promise<ProductActionResult> {
   if (
-    typeof id !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+    method !== "POST" &&
+    (typeof id !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        id,
+      ))
   )
     return { success: false, message: "Geçerli bir ürün seçin." };
   try {
     const base = process.env.API_URL ?? "http://localhost:3001";
     const response = await fetch(
-      `${base.replace(/\/$/, "")}/products/detail/${encodeURIComponent(id)}`,
+      `${base.replace(/\/$/, "")}${method === "POST" ? "/products" : `/products/detail/${encodeURIComponent(id)}`}`,
       {
         method,
         cache: "no-store",
@@ -86,10 +90,12 @@ export async function deleteProduct(id: string): Promise<ProductActionResult> {
   return requestProduct(id, "DELETE");
 }
 
-export async function updateProduct(
-  id: string,
+async function validateProductInput(
   input: ProductChanges,
-): Promise<ProductActionResult> {
+): Promise<
+  | { success: true; changes: ProductChanges }
+  | { success: false; message: string }
+> {
   if (!input || typeof input !== "object")
     return { success: false, message: "Ürün bilgileri geçerli değil." };
   const changes: ProductChanges = {};
@@ -166,5 +172,37 @@ export async function updateProduct(
   }
   if (!Object.keys(changes).length)
     return { success: false, message: "Güncellenecek alan gönderilmedi." };
-  return requestProduct(id, "PATCH", changes);
+  return { success: true, changes };
+}
+
+export async function updateProduct(
+  id: string,
+  input: ProductChanges,
+): Promise<ProductActionResult> {
+  const validated = await validateProductInput(input);
+  if (!validated.success) return validated;
+  return requestProduct(id, "PATCH", validated.changes);
+}
+
+export async function createProduct(
+  input: ProductChanges,
+): Promise<ProductActionResult> {
+  if (
+    !input ||
+    typeof input.productName !== "string" ||
+    typeof input.productPrice !== "string" ||
+    typeof input.categoryId !== "string"
+  )
+    return {
+      success: false,
+      message: "Ürün adı, fiyat ve kategori zorunludur.",
+    };
+  const validated = await validateProductInput(input);
+  if (!validated.success) return validated;
+  return requestProduct("", "POST", {
+    ...validated.changes,
+    productDiscount: validated.changes.productDiscount ?? "0.00",
+    productImage: validated.changes.productImage ?? null,
+    productId: randomUUID(),
+  });
 }

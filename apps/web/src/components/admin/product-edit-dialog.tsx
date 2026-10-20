@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Category, Product } from "../../../types";
 import {
+  createProduct,
   loadProduct,
   updateProduct,
   deleteProduct,
@@ -11,12 +12,21 @@ import {
 import styles from "./admin.module.css";
 
 type Props = {
-  product: Product;
+  product?: Product;
   categories: Category[];
   categoryError: string | null;
-  mode: "edit" | "delete";
+  mode: "edit" | "delete" | "create";
   onClose: () => void;
   onSaved: (message: string) => void;
+};
+const emptyProduct: Product = {
+  id: "",
+  productId: "",
+  productName: "",
+  categoryId: "",
+  productPrice: "",
+  productDiscount: "0.00",
+  productImage: null,
 };
 const values = (product: Product) => ({
   name: product.productName,
@@ -27,7 +37,7 @@ const values = (product: Product) => ({
 });
 
 export default function ProductEditDialog({
-  product,
+  product = emptyProduct,
   categories,
   categoryError,
   mode,
@@ -95,6 +105,13 @@ export default function ProductEditDialog({
       changes.productImage = fields.image.trim() || null;
     if (fields.categoryId !== record.categoryId)
       changes.categoryId = fields.categoryId;
+    if (mode === "create") {
+      changes.productName = fields.name.trim();
+      changes.productPrice = fields.price;
+      changes.productDiscount = fields.discount;
+      changes.categoryId = fields.categoryId;
+      changes.productImage = fields.image.trim() || null;
+    }
     if (mode === "edit" && !Object.keys(changes).length) {
       setError("Henüz bir değişiklik yapmadın.");
       return;
@@ -104,15 +121,17 @@ export default function ProductEditDialog({
     setError("");
     try {
       const result =
-        mode === "edit"
-          ? await updateProduct(record.id, changes)
-          : await deleteProduct(product.id);
+        mode === "create"
+          ? await createProduct(changes)
+          : mode === "edit"
+            ? await updateProduct(record.id, changes)
+            : await deleteProduct(product.id);
       if (!result.success) {
         setError(result.message);
         return;
       }
       onSaved(
-        `${result.product.productName} ${mode === "edit" ? "güncellendi" : "silindi"}.`,
+        `${result.product.productName} ${mode === "create" ? "eklendi" : mode === "edit" ? "güncellendi" : "silindi"}.`,
       );
     } catch {
       setError("İşlem tamamlanamadı. Listeyi yenileyip tekrar deneyin.");
@@ -143,7 +162,11 @@ export default function ProductEditDialog({
           <div>
             <p className={styles.eyebrow}>ÜRÜN İŞLEMLERİ</p>
             <h2 id="product-edit-title">
-              {mode === "edit" ? "Ürünü düzenle" : "Ürünü sil"}
+              {mode === "create"
+                ? "Yeni ürün ekle"
+                : mode === "edit"
+                  ? "Ürünü düzenle"
+                  : "Ürünü sil"}
             </h2>
           </div>
           <button
@@ -156,15 +179,17 @@ export default function ProductEditDialog({
           </button>
         </div>
         <p id="product-edit-description" className={styles.dialogDescription}>
-          {mode === "edit"
-            ? "Ürün bilgilerini, fiyatını ve kategorisini güncelleyebilirsin."
-            : `“${product.productName}” ürününü silmek istediğine emin misin? Bu işlem geri alınamaz.`}
+          {mode === "create"
+            ? "Ürün bilgilerini gir ve ait olduğu kategoriyi seç. Ürün kodu otomatik oluşturulur."
+            : mode === "edit"
+              ? "Ürün bilgilerini, fiyatını ve kategorisini güncelleyebilirsin."
+              : `“${product.productName}” ürününü silmek istediğine emin misin? Bu işlem geri alınamaz.`}
         </p>
         {loading ? (
           <p role="status" className={styles.dialogDescription}>
             Güncel ürün bilgileri alınıyor…
           </p>
-        ) : mode === "edit" && !loadFailed ? (
+        ) : mode !== "delete" && !loadFailed ? (
           <fieldset className={styles.fields} disabled={busy}>
             <label>
               Ürün adı
@@ -184,11 +209,19 @@ export default function ProductEditDialog({
                 disabled={!!categoryError}
                 onChange={(event) => field("categoryId", event.target.value)}
               >
-                {!categories.some(
-                  (item) => item.categoryId === fields.categoryId,
-                ) && (
-                  <option value={fields.categoryId}>{fields.categoryId}</option>
+                {mode === "create" && (
+                  <option value="" disabled>
+                    Kategori seçin
+                  </option>
                 )}
+                {mode !== "create" &&
+                  !categories.some(
+                    (item) => item.categoryId === fields.categoryId,
+                  ) && (
+                    <option value={fields.categoryId}>
+                      {fields.categoryId}
+                    </option>
+                  )}
                 {categories.map((category) => (
                   <option key={category.id} value={category.categoryId}>
                     {category.categoryName}
@@ -196,7 +229,11 @@ export default function ProductEditDialog({
                 ))}
               </select>
               {categoryError && (
-                <small>Kategoriler alınamadı. Mevcut kategori korunacak.</small>
+                <small>
+                  {mode === "create"
+                    ? "Kategoriler alınamadı. Listeyi yenileyip tekrar deneyin."
+                    : "Kategoriler alınamadı. Mevcut kategori korunacak."}
+                </small>
               )}
             </label>
             <div className={styles.formColumns}>
@@ -240,10 +277,21 @@ export default function ProductEditDialog({
               </small>
             </label>
             <p className={styles.dialogCode}>
-              Ürün kodu: <code>{record.productId}</code>
+              {mode === "create" ? (
+                "Ürün kodu otomatik oluşturulacak."
+              ) : (
+                <>
+                  Ürün kodu: <code>{record.productId}</code>
+                </>
+              )}
             </p>
           </fieldset>
         ) : null}
+        {mode === "create" && !categoryError && categories.length === 0 && (
+          <p className={styles.dialogWarning}>
+            Ürün eklemek için önce bir kategori bulunmalıdır.
+          </p>
+        )}
         {error && (
           <p className={styles.dialogError} role="alert">
             {error}
@@ -269,16 +317,23 @@ export default function ProductEditDialog({
           ) : (
             <button
               type="submit"
-              disabled={busy || loading}
+              disabled={
+                busy ||
+                loading ||
+                (mode === "create" &&
+                  (!!categoryError || categories.length === 0))
+              }
               className={
                 mode === "delete" ? styles.deleteButton : styles.saveButton
               }
             >
               {busy
                 ? "İşleniyor…"
-                : mode === "edit"
-                  ? "Değişiklikleri kaydet"
-                  : "Ürünü sil"}
+                : mode === "create"
+                  ? "Ürünü ekle"
+                  : mode === "edit"
+                    ? "Değişiklikleri kaydet"
+                    : "Ürünü sil"}
             </button>
           )}
         </div>

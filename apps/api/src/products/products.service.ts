@@ -8,6 +8,7 @@ import { DATABASE, type Database } from '../database/database.module.js';
 import { asc, eq } from 'drizzle-orm';
 import { categories, products } from '../database/schema.js';
 import { UpdateProductDto } from './dto/update-product-dto.js';
+import { CreateProductDto } from './dto/export-product-dto.js';
 
 @Injectable()
 export class ProductsService {
@@ -85,5 +86,19 @@ export class ProductsService {
       throw new NotFoundException('Product Bulunamadı');
     }
     return deletedProduct;
+  }
+  async create(body: CreateProductDto) {
+    const [product] = await this.database
+      .insert(products)
+      .values({
+        productName: body.productName,
+        productId: body.productId,
+        categoryId: body.categoryId,
+        productPrice: body.productPrice,
+        productDiscount: body.productDiscount,
+        productImage: body.productImage,
+      })
+      .returning();
+    return product;
   }
 }
