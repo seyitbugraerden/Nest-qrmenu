@@ -1,5 +1,5 @@
 import "server-only";
-import type { Category } from "@/types/menu";
+import { Category } from "../../types";
 
 function isCategory(value: unknown): value is Category {
   if (!value || typeof value !== "object") return false;

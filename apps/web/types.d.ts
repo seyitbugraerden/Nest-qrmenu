@@ -1,6 +1,10 @@
-import type { Category } from "../../types.db";
-
-export type { Category };
+export type Category = {
+  id: string;
+  slug: string;
+  categoryId: string;
+  categoryName: string;
+  categoryImage: string | null;
+};
 
 export type Product = {
   id: string;

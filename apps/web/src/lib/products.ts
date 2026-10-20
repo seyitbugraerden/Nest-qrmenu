@@ -1,5 +1,5 @@
 import "server-only";
-import type { Product } from "@/types/menu";
+import { Product } from "../../types";
 
 function isNumeric(value: unknown): value is string | number {
   return (
